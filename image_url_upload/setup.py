@@ -1,10 +1,9 @@
-# setup.py
 from setuptools import setup, find_packages
 
 setup(
-    name="image_url_upload",  # PyPI/package name
+    name="image-url-upload",  # PyPI/package name
     version="0.1.0",
-    packages=find_packages(),
+    packages=find_packages(include=["image_url_upload", "image_url_upload.*"]),
     include_package_data=True,  # include templates, static files
     install_requires=[
         "Django>=4.2",
