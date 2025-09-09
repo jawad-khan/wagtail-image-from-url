@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="image-url-upload",  # PyPI/package name
+    name="image-url-upload",
     version="0.1.0",
     packages=find_packages(include=["image_url_upload", "image_url_upload.*"]),
-    include_package_data=True,  # include templates, static files
+    include_package_data=True,
     install_requires=[
         "Django>=4.2",
         "Wagtail>=5.0",
