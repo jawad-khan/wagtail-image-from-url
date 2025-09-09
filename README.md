@@ -1,0 +1,1 @@
+# wagtail-image-from-url
