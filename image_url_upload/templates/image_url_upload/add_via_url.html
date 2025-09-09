@@ -1,0 +1,34 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n wagtailadmin_tags %}
+
+{% block content %}
+  {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="nice-padding">
+      {{ form.non_field_errors }}
+
+      <ul class="fields">
+        <li>
+          {{ form.image_url.label_tag }}
+          {{ form.image_url }}
+          {% if form.image_url.errors %}
+            <p class="error-message">{{ form.image_url.errors }}</p>
+          {% endif %}
+        </li>
+      </ul>
+
+      <div class="actions">
+        <button type="submit" class="button button-longrunning">
+          <span class="button-label">{% trans "Add image" %}</span>
+          <span class="button-spinner"></span>
+        </button>
+        <a href="{% url 'wagtailimages:index' %}" class="button button-secondary">
+          {% trans "Cancel" %}
+        </a>
+      </div>
+    </div>
+  </form>
+{% endblock %}
