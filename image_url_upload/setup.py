@@ -1,22 +1,18 @@
+# setup.py
 from setuptools import setup, find_packages
 
 setup(
-    name="wagtail-image-url-upload",
+    name="image_url_upload",  # PyPI/package name
     version="0.1.0",
     packages=find_packages(),
-    include_package_data=True,
+    include_package_data=True,  # include templates, static files
     install_requires=[
         "Django>=4.2",
         "Wagtail>=5.0",
-        "requests",  # if your utils use requests to fetch images
+        "requests",
     ],
-    entry_points={},
     url="https://github.com/awais786/wagtail-image-from-url",
     license="MIT",
-    author="Your Name",
+    author="Awais Qureshi",
     description="Add images to Wagtail via URL",
-    classifiers=[
-        "Framework :: Django",
-        "Framework :: Wagtail",
-    ],
 )
