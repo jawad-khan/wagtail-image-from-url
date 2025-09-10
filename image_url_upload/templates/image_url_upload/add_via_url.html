@@ -3,12 +3,13 @@
 
 {% block titletag %}{% trans "Add image from URL" %}{% endblock %}
 
-{% block header %}
-    {% include "wagtailadmin/shared/breadcrumbs.html" with items=breadcrumbs_items %}
-    {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
-{% endblock %}
-
 {% block content %}
+  {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
+
+  {% block header_extra %}
+    {% breadcrumbs items=breadcrumbs_items %}
+  {% endblock %}
+
   <form method="post" novalidate>
     {% csrf_token %}
 
