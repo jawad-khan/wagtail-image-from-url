@@ -4,6 +4,10 @@
 {% block content %}
   {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
 
+  {% block header_extra %}
+    {% breadcrumbs %}
+  {% endblock %}
+
   <form method="post" novalidate>
     {% csrf_token %}
 
