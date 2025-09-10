@@ -3,18 +3,25 @@
 
 {% block titletag %}{% trans "Add image from URL" %}{% endblock %}
 
-{% block content %}
-  <div class="nice-padding">
-    <h1>{% trans "Add image from URL" %}</h1>
-
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="button button-primary">{% trans "Add image" %}</button>
-    </form>
-  </div>
+{# --- Breadcrumbs go inside the header block --- #}
+{% block header %}
+    {% include "wagtailadmin/shared/breadcrumbs.html" with items=breadcrumbs_items %}
+    <h1 class="w-header__title" id="header-title">
+        <svg class="icon icon-image w-header__glyph" aria-hidden="true">
+            <use href="#icon-image"></use>
+        </svg>
+        {% trans "Add image from URL" %}
+    </h1>
 {% endblock %}
 
-{% block header %}
-  {% include "wagtailadmin/shared/breadcrumbs.html" with items=breadcrumbs_items %}
+{% block content %}
+<div class="nice-padding">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button button-primary">
+            {% trans "Add image" %}
+        </button>
+    </form>
+</div>
 {% endblock %}
