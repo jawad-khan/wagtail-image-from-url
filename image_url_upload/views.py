@@ -3,7 +3,6 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import gettext as _
 from wagtail.admin import messages as wagtail_messages
-from wagtail.admin.ui.components import BreadcrumbItem
 
 from .forms import AddImageFromURLForm
 from .utils import get_image_from_url
@@ -12,8 +11,8 @@ from .utils import get_image_from_url
 @staff_member_required
 def add_image_via_url(request):
     breadcrumbs_items = [
-        BreadcrumbItem(_("Images"), url="wagtailimages:index"),
-        BreadcrumbItem(_("Add image from URL")),
+        {"url": "wagtailimages:index", "label": _("Images")},
+        {"label": _("Add image from URL")},
     ]
 
     if request.method == "POST":
