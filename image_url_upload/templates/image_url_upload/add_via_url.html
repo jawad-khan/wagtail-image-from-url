@@ -1,20 +1,18 @@
 {% extends "wagtailadmin/base.html" %}
-{% load wagtailadmin_tags i18n %}
+{% load i18n wagtailadmin_tags %}
 
 {% block titletag %}{% trans "Add image from URL" %}{% endblock %}
+{% block bodyclass %}menu-images{% endblock %}
 
 {% block content %}
-  {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
-
-  {% block header_extra %}
-    {% breadcrumbs items=hardcoded_breadcrumbs %}
+  {% block header %}
+    {% breadcrumbs items=breadcrumbs_items %}
+    {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
   {% endblock %}
 
-  <form method="post" novalidate>
-    {% csrf_token %}
-
-    <div class="nice-padding">
-      {{ form.non_field_errors }}
+  <div class="nice-padding">
+    <form action="" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
 
       <div class="drop-zone w-mt-8">
         <p>{% trans "Paste an image URL below to add it directly." %}</p>
@@ -25,7 +23,7 @@
         </ul>
 
         <div class="actions">
-          <button type="submit" class="button button-longrunning">
+          <button type="submit" class="button button-longrunning button-primary">
             <span class="button-label">{% trans "Add image" %}</span>
             <span class="button-spinner"></span>
           </button>
@@ -34,6 +32,6 @@
           </a>
         </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 {% endblock %}
