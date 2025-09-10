@@ -9,6 +9,12 @@ from .utils import get_image_from_url   # ✅ import the util function
 
 @staff_member_required
 def add_image_via_url(request):
+     breadcrumbs_items = [
+        BreadcrumbItem(_('Images'), url='wagtailimages:index'),
+        BreadcrumbItem(_('Add image from URL')),
+    ]
+
+
     if request.method == "POST":
         form = ImageUrlForm(request.POST)
         if form.is_valid():
@@ -26,4 +32,4 @@ def add_image_via_url(request):
     else:
         form = ImageUrlForm()
 
-    return render(request, "image_url_upload/add_via_url.html", {"form": form})
+    return render(request, "image_url_upload/add_via_url.html", {"form": form, "breadcrumbs_items": breadcrumbs_items})
