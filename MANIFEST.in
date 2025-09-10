@@ -1,0 +1,2 @@
+recursive-include image_url_upload/templates *
+recursive-include templates *
