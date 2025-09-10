@@ -17,7 +17,7 @@ class AddImageViaURLView(FormView):
     form_class = ImageURLForm
 
     def form_valid(self, form):
-        url = form.cleaned_data["url"]
+        url = form.cleaned_data["image_url"]
 
         # validate and fetch
         if not validate_image_url(url):
