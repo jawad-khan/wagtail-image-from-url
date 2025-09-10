@@ -19,19 +19,8 @@ class ImageURLForm(forms.Form):
 
     def clean_image_url(self):
         image_url = self.cleaned_data["image_url"]
-
-        try:
-            response = requests.head(image_url, allow_redirects=True, timeout=5)
-            content_length = response.headers.get("Content-Length")
-
-            if content_length and int(content_length) > self.MAX_FILE_SIZE_MB * 1024 * 1024:
-                raise ValidationError(
-                    f"File size exceeds {self.MAX_FILE_SIZE_MB} MB limit."
-                )
-        except requests.RequestException:
-            raise ValidationError("Could not validate image URL.")
-
-        # Run extra security + format validation from utils
-        validate_image_url(image_url)
-
+        # ✅ Only basic URL + scheme validation here
+        if not image_url.lower().startswith(("http://", "https://")):
+            raise ValidationError("Only http/https URLs are allowed.")
+        
         return image_url
