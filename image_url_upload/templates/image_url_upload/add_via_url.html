@@ -14,18 +14,23 @@
     <div class="nice-padding">
       {{ form.non_field_errors }}
 
-      <ul class="fields">
-        {% include "wagtailadmin/shared/field.html" with field=form.image_url %}
-      </ul>
+      <div class="drop-zone w-mt-8">
+        <p>{% trans "Paste an image URL below to add it directly." %}</p>
+        <p>{% trans "Supported formats: AVIF, GIF, JPG, JPEG, PNG, WEBP. Maximum filesize: 10.0 MB." %}</p>
 
-      <div class="actions">
-        <button type="submit" class="button button-longrunning">
-          <span class="button-label">{% trans "Add image" %}</span>
-          <span class="button-spinner"></span>
-        </button>
-        <a href="{% url 'wagtailimages:index' %}" class="button button-secondary">
-          {% trans "Cancel" %}
-        </a>
+        <ul class="fields">
+          {% include "wagtailadmin/shared/field.html" with field=form.image_url %}
+        </ul>
+
+        <div class="actions">
+          <button type="submit" class="button button-longrunning">
+            <span class="button-label">{% trans "Add image" %}</span>
+            <span class="button-spinner"></span>
+          </button>
+          <a href="{% url 'wagtailimages:index' %}" class="button button-secondary">
+            {% trans "Cancel" %}
+          </a>
+        </div>
       </div>
     </div>
   </form>
