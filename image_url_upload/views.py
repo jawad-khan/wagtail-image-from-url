@@ -1,88 +1,58 @@
-import os
-import imghdr
-import uuid
-import ipaddress
+# image_url_upload/views.py
+
 import requests
-from urllib.parse import urlparse
+from django import forms
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
+from wagtail.admin.views.generic import CreateView
 from wagtail.images import get_image_model
-from PIL import Image
+from wagtail.images.views.images import AddView
+
+MAX_FILE_SIZE_MB = 5
 
 
-ALLOWED_FORMATS = {"avif", "gif", "jpeg", "jpg", "png", "webp"}
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
-TIMEOUT = (5, 15)  # (connect timeout, read timeout)
+class ImageURLForm(forms.Form):
+    image_url = forms.URLField(label=_("Image URL"))
 
+    def clean_image_url(self):
+        url = self.cleaned_data["image_url"]
 
-def _is_private_address(hostname: str) -> bool:
-    """Prevent SSRF by blocking private / loopback IP addresses."""
-    try:
-        ip = ipaddress.ip_address(hostname)
-        return ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_multicast
-    except ValueError:
-        import socket
         try:
-            resolved = socket.gethostbyname(hostname)
-            ip = ipaddress.ip_address(resolved)
-            return ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_multicast
-        except Exception:
-            return True  # fail safe: block unresolvable
-    return False
+            response = requests.head(url, allow_redirects=True, timeout=5)
+            content_length = response.headers.get("Content-Length")
+
+            if content_length and int(content_length) > MAX_FILE_SIZE_MB * 1024 * 1024:
+                raise ValidationError(
+                    _(f"File size exceeds {MAX_FILE_SIZE_MB} MB limit.")
+                )
+        except requests.RequestException:
+            raise ValidationError(_("Could not validate image URL."))
+
+        return url
 
 
-def enforce_size_limit(content_length: int):
-    """Reusable size check."""
-    if content_length and content_length > MAX_FILE_SIZE:
-        raise ValidationError(f"File size exceeds {MAX_FILE_SIZE // (1024 * 1024)} MB limit.")
-
-
-def get_image_from_url(url, user=None):
+class AddImageViaURLView(AddView):
     """
-    Download an image from a remote URL, with security checks:
-    - Block SSRF
-    - Enforce max size
-    - Validate actual image format
+    A view similar to Wagtail's AddView, but fetches the image from a URL instead of file upload.
     """
-    parsed = urlparse(url)
 
-    if parsed.scheme not in ("http", "https"):
-        raise ValidationError("Only http/https URLs are allowed.")
+    form_class = ImageURLForm
+    template_name = "image_url_upload/add.html"
+    model = get_image_model()
 
-    if _is_private_address(parsed.hostname):
-        raise ValidationError("Blocked for security reasons (private/loopback address).")
+    def form_valid(self, form):
+        url = form.cleaned_data["image_url"]
+        response = requests.get(url, stream=True, timeout=10)
+        response.raise_for_status()
 
-    # Stream response with chunk size validation
-    response = requests.get(url, stream=True, timeout=TIMEOUT, verify=True)
-    response.raise_for_status()
+        file_name = url.split("/")[-1]
+        image_file = ContentFile(response.content, name=file_name)
 
-    # Enforce Content-Length header (if present)
-    enforce_size_limit(int(response.headers.get("Content-Length", 0)))
+        self.object = self.model.objects.create(
+            title=file_name,
+            file=image_file,
+        )
 
-    content = b""
-    for chunk in response.iter_content(1024 * 1024):  # 1 MB chunks
-        content += chunk
-        enforce_size_limit(len(content))
-
-    # Verify with Pillow
-    try:
-        img = Image.open(ContentFile(content))
-        img.verify()
-    except Exception:
-        raise ValidationError("The file is not a valid image.")
-
-    # Check allowed formats
-    ext = imghdr.what(None, content) or (img.format.lower() if hasattr(img, "format") else None)
-    if ext and ext.lower() not in ALLOWED_FORMATS:
-        raise ValidationError(f"Unsupported format: {ext.upper()}")
-
-    # Save to Wagtail Image model
-    ImageModel = get_image_model()
-    filename = f"{uuid.uuid4().hex}.{ext or 'jpg'}"
-
-    image = ImageModel.objects.create(
-        title=os.path.basename(parsed.path) or "Imported image",
-        file=ContentFile(content, name=filename),
-        uploaded_by_user=user,
-    )
-    return image
+        return redirect("wagtailimages:index")
