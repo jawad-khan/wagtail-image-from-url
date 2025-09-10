@@ -7,7 +7,7 @@
   {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
 
   {% block header_extra %}
-    {% breadcrumbs items=breadcrumbs_items %}
+    {% breadcrumbs items=hardcoded_breadcrumbs %}
   {% endblock %}
 
   <form method="post" novalidate>
