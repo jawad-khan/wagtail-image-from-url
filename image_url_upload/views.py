@@ -16,7 +16,7 @@ def add_image_via_url(request):
     breadcrumbs_items = [
         {'url': reverse('wagtailadmin_home'), 'label': _('Home')},
         {'url': reverse('wagtailimages:index'), 'label': _('Images')},
-        {'url': reverse('wagtailimages:add_image_via_url'), 'label': _('Add image from URL')},
+        {'url': reverse('add_image_via_url'), 'label': _('Add image from URL')},
     ]
 
     if request.method == "POST":
