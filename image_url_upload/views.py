@@ -10,9 +10,11 @@ from .utils import get_image_from_url
 
 @staff_member_required
 def add_image_via_url(request):
+    
     breadcrumbs_items = [
-        {"url": "wagtailimages:index", "label": _("Images")},
-        {"label": _("Add image from URL")},
+        {'url': reverse('wagtailadmin_home'), 'label': _('Home')},
+        {'url': reverse('wagtailimages:index'), 'label': _('Images')},
+        {'url': reverse('wagtailimages:add_url'), 'label': _('Add image from URL')},
     ]
 
     if request.method == "POST":
