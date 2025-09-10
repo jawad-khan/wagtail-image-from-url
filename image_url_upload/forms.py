@@ -1,4 +1,5 @@
 from django import forms
+import requests
 
 
 class ImageURLForm(forms.Form):
