@@ -13,7 +13,7 @@ from .utils import validate_image_url, get_image_from_url
 
 
 class AddImageViaURLView(FormView):
-    template_name = "image_url_upload/add.html"
+    template_name = "image_url_upload/add_via_url.html"
     form_class = ImageURLForm
 
     def form_valid(self, form):
