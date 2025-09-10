@@ -86,4 +86,4 @@ def get_image_from_url(url, user=None):
         file=ContentFile(content, name=filename),
         uploaded_by_user=user,
     )
-    return image
+    return image, fmt 
