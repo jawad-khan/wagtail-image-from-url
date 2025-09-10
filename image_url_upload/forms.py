@@ -1,5 +1,6 @@
 from django import forms
-import requests
+from django.core.exceptions import ValidationError
+from .utils import validate_image_url
 
 
 class ImageURLForm(forms.Form):
