@@ -1,16 +1,21 @@
+import os
+import uuid
 import ipaddress
 import socket
 import requests
 from urllib.parse import urlparse
 from django.core.exceptions import ValidationError
-from PIL import Image
 from django.core.files.base import ContentFile
+from wagtail.images import get_image_model
+from PIL import Image
 
 ALLOWED_FORMATS = {"avif", "gif", "jpeg", "jpg", "png", "webp"}
-TIMEOUT = (5, 15)
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+TIMEOUT = (5, 15)  # connect, read
 
 
 def _is_private_address(hostname: str) -> bool:
+    """Prevent SSRF by blocking private/loopback/reserved IPs."""
     try:
         ip = ipaddress.ip_address(hostname)
     except ValueError:
@@ -23,6 +28,7 @@ def _is_private_address(hostname: str) -> bool:
 
 
 def validate_image_url(url: str):
+    """Lightweight pre-check before downloading the whole file."""
     parsed = urlparse(url)
 
     if parsed.scheme not in ("http", "https"):
@@ -31,7 +37,6 @@ def validate_image_url(url: str):
     if not parsed.hostname or _is_private_address(parsed.hostname):
         raise ValidationError("Blocked for security reasons (private/loopback address).")
 
-    # Quick HEAD check
     try:
         head = requests.head(url, allow_redirects=True, timeout=TIMEOUT)
         content_type = head.headers.get("Content-Type", "")
@@ -40,17 +45,45 @@ def validate_image_url(url: str):
     except requests.RequestException:
         raise ValidationError("Could not fetch image headers.")
 
-    # Fetch first chunk to validate with Pillow
+
+def get_image_from_url(url, user=None):
+    """
+    Download the image securely, enforce size + format, save into Wagtail.
+    """
+    parsed = urlparse(url)
+
+    # Enforce SSRF safety again
+    if _is_private_address(parsed.hostname):
+        raise ValidationError("Blocked for security reasons (private/loopback address).")
+
+    # Stream the response with size check
+    response = requests.get(url, stream=True, timeout=TIMEOUT)
+    response.raise_for_status()
+
+    content = b""
+    for chunk in response.iter_content(1024 * 1024):  # 1MB chunks
+        content += chunk
+        if len(content) > MAX_FILE_SIZE:
+            raise ValidationError("Image too large (max 10 MB).")
+
+    # Validate with Pillow
     try:
-        response = requests.get(url, stream=True, timeout=TIMEOUT)
-        response.raise_for_status()
-
-        # Read a small chunk
-        chunk = b"".join(next(response.iter_content(1024)) for _ in range(10))
-        img = Image.open(ContentFile(chunk))
+        img = Image.open(ContentFile(content))
+        img.verify()
         fmt = img.format.lower()
-
-        if fmt not in ALLOWED_FORMATS:
-            raise ValidationError(f"Unsupported format: {fmt.upper()}")
     except Exception:
-        raise ValidationError("Invalid or unsupported image URL.")
+        raise ValidationError("The file is not a valid image.")
+
+    if fmt not in ALLOWED_FORMATS:
+        raise ValidationError(f"Unsupported format: {fmt.upper()}")
+
+    # Save to Wagtail Image model
+    ImageModel = get_image_model()
+    filename = f"{uuid.uuid4().hex}.{fmt or 'jpg'}"
+
+    image = ImageModel.objects.create(
+        title=os.path.basename(parsed.path) or "Imported image",
+        file=ContentFile(content, name=filename),
+        uploaded_by_user=user,
+    )
+    return image
