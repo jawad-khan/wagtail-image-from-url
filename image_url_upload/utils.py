@@ -36,7 +36,7 @@ def validate_image_url(url: str):
 
     if not parsed.hostname or _is_private_address(parsed.hostname):
         raise ValidationError("Blocked for security reasons (private/loopback address).")
-
+    
     try:
         head = requests.head(url, allow_redirects=True, timeout=TIMEOUT)
         content_type = head.headers.get("Content-Type", "")
@@ -55,6 +55,10 @@ def get_image_from_url(url, user=None):
 
     response = requests.get(url, stream=True, timeout=TIMEOUT)
     response.raise_for_status()
+
+    content_type = response.headers.get("Content-Type", "").lower()
+    if not content_type.startswith("image/"):
+        raise ValidationError(f"Invalid Content-Type: {content_type or 'missing'}")
 
     content = b""
     for chunk in response.iter_content(1024 * 1024):  # 1MB chunks
