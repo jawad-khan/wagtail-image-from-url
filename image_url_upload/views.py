@@ -6,9 +6,8 @@ from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
-from wagtail.admin.views.generic import CreateView
+from wagtail.admin.views import generic
 from wagtail.images import get_image_model
-from wagtail.images.views.images import AddView
 
 MAX_FILE_SIZE_MB = 5
 
@@ -33,13 +32,15 @@ class ImageURLForm(forms.Form):
         return url
 
 
-class AddImageViaURLView(AddView):
+class AddImageViaURLView(generic.CreateView):
     """
-    A view similar to Wagtail's AddView, but fetches the image from a URL instead of file upload.
+    A Wagtail admin CreateView to add images via URL.
     """
 
     form_class = ImageURLForm
     template_name = "image_url_upload/add.html"
+    page_title = _("Add image via URL")
+    header_icon = "image"
     model = get_image_model()
 
     def form_valid(self, form):
@@ -50,6 +51,7 @@ class AddImageViaURLView(AddView):
         file_name = url.split("/")[-1]
         image_file = ContentFile(response.content, name=file_name)
 
+        # create new image instance
         self.object = self.model.objects.create(
             title=file_name,
             file=image_file,
