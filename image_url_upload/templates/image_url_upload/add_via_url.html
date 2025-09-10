@@ -2,11 +2,12 @@
 {% load i18n wagtailadmin_tags %}
 
 {% block content %}
-  {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
-
-  {% block header_extra %}
-    {% breadcrumbs items=breadcrumbs_items %}
-  {% endblock %}
+  {# Header with breadcrumbs support #}
+  {% include "wagtailadmin/shared/header.html" with
+      title=_("Add image from URL")
+      icon="image"
+      breadcrumbs=breadcrumbs_items
+  %}
 
   <form method="post" novalidate>
     {% csrf_token %}
