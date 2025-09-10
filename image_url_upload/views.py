@@ -1,38 +1,41 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
-from wagtail.admin import messages as wagtail_messages
-from wagtail.admin.ui.components import BreadcrumbItem
+from django.shortcuts import render
+from wagtail.images.forms import AddImageFromURLForm
+from wagtail.images import get_image_model
+from wagtail.admin import messages
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 
-from .forms import ImageUrlForm
-from .utils import get_image_from_url
+def add_url(request):
+    if request.method == 'POST':
+        form = AddImageFromURLForm(request.POST)
+        if form.is_valid():
+            try:
+                # Assuming you have a function to create an image from a URL
+                image_model = get_image_model()
+                image = image_model.objects.create(
+                    title=form.cleaned_data['image_url'],
+                    file=form.cleaned_data['image_url']
+                )
+                messages.success(request, _('Image "%s" added.') % image.title, buttons=[
+                    messages.button(
+                        reverse('wagtailimages:edit', args=(image.id,)),
+                        _('Edit')
+                    )
+                ])
+                # You'll likely need to redirect to the image index or a similar page
+            except Exception as e:
+                messages.error(request, _("Failed to add image from URL: %s") % str(e))
+    else:
+        form = AddImageFromURLForm()
 
-
-@staff_member_required
-def add_image_via_url(request):
+    # Define breadcrumb items
     breadcrumbs_items = [
-        BreadcrumbItem(_('Images'), url='wagtailimages:index'),
-        BreadcrumbItem(_('Add image from URL')),
+        {'url': reverse('wagtailadmin_home'), 'label': _('Home')},
+        {'url': reverse('wagtailimages:index'), 'label': _('Images')},
+        {'url': reverse('wagtailimages:add_url'), 'label': _('Add image from URL')},
     ]
 
-    if request.method == "POST":
-        form = ImageUrlForm(request.POST)
-        if form.is_valid():
-            url = form.cleaned_data["image_url"]
-            try:
-                image = get_image_from_url(url, user=request.user)
-                wagtail_messages.success(
-                    request, f"Image '{image.title}' added successfully."
-                )
-                return redirect("wagtailimages:index")
-            except Exception as e:
-                messages.error(request, f"Error: {e}")
-    else:
-        form = ImageUrlForm()
-
-    return render(
-        request,
-        "image_url_upload/add_via_url.html",
-        {"form": form, "breadcrumbs_items": breadcrumbs_items},
-    )
+    return render(request, 'wagtailimages/add_url.html', {
+        'form': form,
+        'breadcrumbs_items': breadcrumbs_items,
+    })
