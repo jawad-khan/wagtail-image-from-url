@@ -15,13 +15,7 @@
       {{ form.non_field_errors }}
 
       <ul class="fields">
-        <li>
-          {{ form.image_url.label_tag }}
-          {{ form.image_url }}
-          {% if form.image_url.errors %}
-            <p class="error-message">{{ form.image_url.errors }}</p>
-          {% endif %}
-        </li>
+        {% include "wagtailadmin/shared/field.html" with field=form.image_url %}
       </ul>
 
       <div class="actions">
