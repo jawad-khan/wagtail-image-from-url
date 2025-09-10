@@ -25,17 +25,12 @@ class AddImageViaURLView(FormView):
         #     return redirect("wagtailimages:index")
 
         try:
-            image_file, filename = get_image_from_url(url)
+            image = get_image_from_url(url, user=self.request.user)
         except Exception as e:
             messages.error(self.request, f"Failed to fetch image: {e}")
             return redirect("wagtailimages:index")
 
         # create Wagtail Image
-        image = Image.objects.create(
-            title=filename,
-            file=ContentFile(image_file.read(), name=filename),
-        )
-
-        wagtail_messages.success(self.request, f"Image '{filename}' added successfully!")
+        wagtail_messages.success(self.request, f"Image '{image.title}' added successfully!")
 
         return redirect("wagtailimages:index")
