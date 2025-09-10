@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import gettext as _
 from wagtail.admin import messages as wagtail_messages
+from django.urls import reverse
+
 
 from .forms import AddImageFromURLForm
 from .utils import get_image_from_url
