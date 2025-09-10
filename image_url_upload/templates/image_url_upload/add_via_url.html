@@ -1,38 +1,20 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n wagtailadmin_tags %}
+{% load wagtailadmin_tags i18n %}
+
+{% block titletag %}{% trans "Add image from URL" %}{% endblock %}
 
 {% block content %}
-  {# Header with breadcrumbs support #}
-  {% include "wagtailadmin/shared/header.html" with
-      title=_("Add image from URL")
-      icon="image"
-      breadcrumbs=breadcrumbs_items
-  %}
+  <div class="nice-padding">
+    <h1>{% trans "Add image from URL" %}</h1>
 
-  <form method="post" novalidate>
-    {% csrf_token %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="button button-primary">{% trans "Add image" %}</button>
+    </form>
+  </div>
+{% endblock %}
 
-    <div class="nice-padding">
-      {{ form.non_field_errors }}
-
-      <div class="drop-zone w-mt-8">
-        <p>{% trans "Paste an image URL below to add it directly." %}</p>
-        <p>{% trans "Supported formats: AVIF, GIF, JPG, JPEG, PNG, WEBP. Maximum filesize: 10.0 MB." %}</p>
-
-        <ul class="fields">
-          {% include "wagtailadmin/shared/field.html" with field=form.image_url %}
-        </ul>
-
-        <div class="actions">
-          <button type="submit" class="button button-longrunning">
-            <span class="button-label">{% trans "Add image" %}</span>
-            <span class="button-spinner"></span>
-          </button>
-          <a href="{% url 'wagtailimages:index' %}" class="button button-secondary">
-            {% trans "Cancel" %}
-          </a>
-        </div>
-      </div>
-    </div>
-  </form>
+{% block header %}
+  {% include "wagtailadmin/shared/breadcrumbs.html" with items=breadcrumbs_items %}
 {% endblock %}
