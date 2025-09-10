@@ -27,14 +27,13 @@ def add_url(request):
                 messages.error(request, _("Failed to add image from URL: %s") % str(e))
     else:
         form = AddImageFromURLForm()
-
-    # Define breadcrumb items
+    
     breadcrumbs_items = [
         {'url': reverse('wagtailadmin_home'), 'label': _('Home')},
         {'url': reverse('wagtailimages:index'), 'label': _('Images')},
         {'url': reverse('wagtailimages:add_url'), 'label': _('Add image from URL')},
     ]
-
+    
     return render(request, 'wagtailimages/add_url.html', {
         'form': form,
         'breadcrumbs_items': breadcrumbs_items,
