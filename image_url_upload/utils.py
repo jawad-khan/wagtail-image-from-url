@@ -48,15 +48,15 @@ def validate_image_url(url: str):
 
 def get_image_from_url(url, user=None):
     """
-    Download the image securely, enforce size + format, save into Wagtail.
+    Download the image securely, enforce size + format, and save into Wagtail Image model.
     """
     parsed = urlparse(url)
 
-    # Enforce SSRF safety again
+    # SSRF block
     if _is_private_address(parsed.hostname):
         raise ValidationError("Blocked for security reasons (private/loopback address).")
 
-    # Stream the response with size check
+    # Stream + size check
     response = requests.get(url, stream=True, timeout=TIMEOUT)
     response.raise_for_status()
 
@@ -66,18 +66,18 @@ def get_image_from_url(url, user=None):
         if len(content) > MAX_FILE_SIZE:
             raise ValidationError("Image too large (max 10 MB).")
 
-    # Validate with Pillow
+    # Validate image
     try:
-        img = Image.open(ContentFile(content))
-        img.verify()
+        img = Image.open(BytesIO(content))
         fmt = img.format.lower()
+        img.close()
     except Exception:
         raise ValidationError("The file is not a valid image.")
 
     if fmt not in ALLOWED_FORMATS:
         raise ValidationError(f"Unsupported format: {fmt.upper()}")
 
-    # Save to Wagtail Image model
+    # Save into Wagtail image model
     ImageModel = get_image_model()
     filename = f"{uuid.uuid4().hex}.{fmt or 'jpg'}"
 
@@ -86,4 +86,5 @@ def get_image_from_url(url, user=None):
         file=ContentFile(content, name=filename),
         uploaded_by_user=user,
     )
-    return image, fmt 
+
+    return image
