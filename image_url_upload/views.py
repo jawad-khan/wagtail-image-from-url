@@ -19,10 +19,10 @@ class AddImageViaURLView(FormView):
     def form_valid(self, form):
         url = form.cleaned_data["image_url"]
 
-        # validate and fetch
-        if not validate_image_url(url):
-            messages.error(self.request, "Invalid or unsupported image URL.")
-            return redirect("wagtailimages:index")
+        # # validate and fetch
+        # if not validate_image_url(url):
+        #     messages.error(self.request, "Invalid or unsupported image URL.")
+        #     return redirect("wagtailimages:index")
 
         try:
             image_file, filename = get_image_from_url(url)
