@@ -12,3 +12,21 @@ class AddImageFromURLForm(forms.Form):
         }),
         help_text=_("Enter a direct link to an image.")
     )
+
+    MAX_FILE_SIZE_MB = 10  # ✅ constraint (adjust as needed)
+
+    def clean_image_url(self):
+        url = self.cleaned_data["image_url"]
+
+        try:
+            response = requests.head(url, allow_redirects=True, timeout=5)
+            content_length = response.headers.get("Content-Length")
+
+            if content_length and int(content_length) > self.MAX_FILE_SIZE_MB * 1024 * 1024:
+                raise ValidationError(
+                    f"File size exceeds {self.MAX_FILE_SIZE_MB} MB limit."
+                )
+        except requests.RequestException:
+            raise ValidationError("Could not validate image URL.")
+
+        return url
