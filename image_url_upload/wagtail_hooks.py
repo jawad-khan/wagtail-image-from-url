@@ -5,12 +5,14 @@ from . import views
 from django.urls import path
 
 
-# 1️⃣ Register the admin URL
-# Register admin URL
 @hooks.register("register_admin_urls")
 def register_admin_urls():
     return [
-        path("images/add-url/", views.add_image_via_url, name="add_image_via_url"),
+        path(
+            "images/add-url/",
+            AddImageViaURLView.as_view(),
+            name="add_image_via_url",
+        ),
     ]
 
 # Add menu item in Wagtail admin
