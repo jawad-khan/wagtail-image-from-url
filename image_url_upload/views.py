@@ -1,40 +1,41 @@
-# image_url_upload/views.py
-from django import forms
-from django.core.exceptions import ValidationError
+import requests
+from django.views.generic.edit import FormView
 from django.shortcuts import redirect
-from django.utils.translation import gettext_lazy as _
-from django.urls import reverse
-from wagtail.admin.views import generic
+from django.contrib import messages
+from django.core.files.base import ContentFile
+
+from wagtail.images.models import Image
+from wagtail.admin.forms import WagtailAdminPageForm
 from wagtail.admin import messages as wagtail_messages
 
-from .utils import get_image_from_url
+from .forms import ImageURLForm
+from .utils import validate_image_url, get_image_from_url
 
 
-class ImageURLForm(forms.Form):
-    image_url = forms.URLField(label=_("Image URL"))
-
-
-class AddImageViaURLView(generic.FormView):
-    form_class = ImageURLForm
+class AddImageViaURLView(FormView):
     template_name = "image_url_upload/add.html"
-    page_title = _("Add image via URL")
-    header_icon = "image"
+    form_class = ImageURLForm
 
     def form_valid(self, form):
-        url = form.cleaned_data["image_url"]
-        try:
-            image = get_image_from_url(url, user=self.request.user)
-            wagtail_messages.success(
-                self.request, _("Image '%(title)s' added successfully.") % {"title": image.title}
-            )
-            return redirect("wagtailimages:index")
-        except ValidationError as e:
-            form.add_error("image_url", e.message)
-            return self.form_invalid(form)
+        url = form.cleaned_data["url"]
 
-    def get_breadcrumbs(self):
-        return [
-            {"url": reverse("wagtailadmin_home"), "label": _("Home")},
-            {"url": reverse("wagtailimages:index"), "label": _("Images")},
-            {"url": "", "label": _("Add image via URL")},
-        ]
+        # validate and fetch
+        if not validate_image_url(url):
+            messages.error(self.request, "Invalid or unsupported image URL.")
+            return redirect("wagtailimages:index")
+
+        try:
+            image_file, filename = get_image_from_url(url)
+        except Exception as e:
+            messages.error(self.request, f"Failed to fetch image: {e}")
+            return redirect("wagtailimages:index")
+
+        # create Wagtail Image
+        image = Image.objects.create(
+            title=filename,
+            file=ContentFile(image_file.read(), name=filename),
+        )
+
+        wagtail_messages.success(self.request, f"Image '{filename}' added successfully!")
+
+        return redirect("wagtailimages:index")
