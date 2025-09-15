@@ -1,34 +1,37 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n wagtailadmin_tags %}
 
+{% block titletag %}{% trans "Add image from URL" %}{% endblock %}
+{% block bodyclass %}menu-images{% endblock %}
+
 {% block content %}
-  {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
+  {% block header %}
+    {% breadcrumbs items=breadcrumbs_items %}
+    {% include "wagtailadmin/shared/header.html" with title=_("Add image from URL") icon="image" %}
+  {% endblock %}
 
-  <form method="post" novalidate>
-    {% csrf_token %}
+  <div class="nice-padding">
+    <form action="" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
 
-    <div class="nice-padding">
-      {{ form.non_field_errors }}
+      <div class="drop-zone w-mt-8">
+        <p>{% trans "Paste an image URL below to add it directly." %}</p>
+        <p>{% trans "Supported formats: AVIF, GIF, JPG, JPEG, PNG, WEBP. Maximum filesize: 10.0 MB." %}</p>
 
-      <ul class="fields">
-        <li>
-          {{ form.image_url.label_tag }}
-          {{ form.image_url }}
-          {% if form.image_url.errors %}
-            <p class="error-message">{{ form.image_url.errors }}</p>
-          {% endif %}
-        </li>
-      </ul>
+        <ul class="fields">
+          {% include "wagtailadmin/shared/field.html" with field=form.image_url %}
+        </ul>
 
-      <div class="actions">
-        <button type="submit" class="button button-longrunning">
-          <span class="button-label">{% trans "Add image" %}</span>
-          <span class="button-spinner"></span>
-        </button>
-        <a href="{% url 'wagtailimages:index' %}" class="button button-secondary">
-          {% trans "Cancel" %}
-        </a>
+        <div class="actions">
+          <button type="submit" class="button button-longrunning button-primary">
+            <span class="button-label">{% trans "Add image" %}</span>
+            <span class="button-spinner"></span>
+          </button>
+          <a href="{% url 'wagtailimages:index' %}" class="button button-secondary">
+            {% trans "Cancel" %}
+          </a>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 {% endblock %}

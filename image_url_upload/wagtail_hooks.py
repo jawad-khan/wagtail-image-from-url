@@ -1,23 +1,30 @@
+# image_url_upload/wagtail_hooks.py
+
+from django.urls import path
 from wagtail import hooks
+from django.utils.translation import gettext_lazy as _
 from wagtail.admin.menu import MenuItem
 from django.urls import reverse
-from . import views
-from django.urls import path
+
+from .views import AddImageViaURLView  # ✅ import your view!
 
 
-# 1️⃣ Register the admin URL
-# Register admin URL
 @hooks.register("register_admin_urls")
 def register_admin_urls():
     return [
-        path("images/add-url/", views.add_image_via_url, name="add_image_via_url"),
+        path(
+            "images/add-url/",
+            AddImageViaURLView.as_view(),
+            name="add_image_via_url",
+        ),
     ]
 
-# Add menu item in Wagtail admin
+
 @hooks.register("register_admin_menu_item")
-def register_add_image_from_url_button():
+def register_admin_menu_item():
     return MenuItem(
-        label="Add image from URL",
-        url=reverse("add_image_via_url"),
-        order=1000  # adjust order as needed
+        _("Add image via URL"),
+        reverse("add_image_via_url"),
+        icon_name="image",
+        order=201,
     )

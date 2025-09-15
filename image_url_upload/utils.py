@@ -1,44 +1,89 @@
- # wagtail/images/utils.py
+import os
+import uuid
+import ipaddress
+import socket
 import requests
-from django.core.files.base import ContentFile
-from django.core.files.temp import NamedTemporaryFile
+from urllib.parse import urlparse
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from wagtail.images import get_image_model
+from PIL import Image
 
-def get_image_from_url(url, title=None, user=None):
-    """
-    Download an image from a URL and save it to the Wagtail Image model.
+ALLOWED_FORMATS = {"avif", "gif", "jpeg", "jpg", "png", "webp"}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+TIMEOUT = (5, 15)  # connect, read
 
-    Args:
-        url (str): Image URL.
-        title (str, optional): Title for the image.
-        user (User, optional): User who is uploading.
 
-    Returns:
-        Image: The created Wagtail Image instance.
-    """
-    Image = get_image_model()
-
+def _is_private_address(hostname: str) -> bool:
+    """Prevent SSRF by blocking private/loopback/reserved IPs."""
     try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-    except Exception as e:
-        raise ValidationError(f"Could not fetch image: {e}")
+        ip = ipaddress.ip_address(hostname)
+    except ValueError:
+        try:
+            resolved = socket.gethostbyname(hostname)
+            ip = ipaddress.ip_address(resolved)
+        except Exception:
+            return True
+    return ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_multicast
 
-    # Ensure it looks like an image
-    content_type = response.headers.get("Content-Type", "")
+
+def validate_image_url(url: str):
+    """Lightweight pre-check before downloading the whole file."""
+    parsed = urlparse(url)
+
+    if parsed.scheme not in ("http", "https"):
+        raise ValidationError("Only http/https URLs are allowed.")
+
+    if not parsed.hostname or _is_private_address(parsed.hostname):
+        raise ValidationError("Blocked for security reasons (private/loopback address).")
+    
+    try:
+        head = requests.head(url, allow_redirects=True, timeout=TIMEOUT)
+        content_type = head.headers.get("Content-Type", "")
+        if not content_type.startswith("image/"):
+            raise ValidationError("URL does not point to an image.")
+    except requests.RequestException:
+        raise ValidationError("Could not fetch image headers.")
+
+
+def get_image_from_url(url, user=None):
+    parsed = urlparse(url)
+
+    # Enforce SSRF safety again
+    if _is_private_address(parsed.hostname):
+        raise ValidationError("Blocked for security reasons (private/loopback address).")
+
+    response = requests.get(url, stream=True, timeout=TIMEOUT)
+    response.raise_for_status()
+
+    content_type = response.headers.get("Content-Type", "").lower()
     if not content_type.startswith("image/"):
-        raise ValidationError("The provided URL does not point to a valid image.")
+        raise ValidationError(f"Invalid Content-Type: {content_type or 'missing'}")
 
-    # Save to Wagtail's Image model
-    file_ext = content_type.split("/")[-1]
-    filename = f"downloaded.{file_ext}"
+    content = b""
+    for chunk in response.iter_content(1024 * 1024):  # 1MB chunks
+        content += chunk
+        if len(content) > MAX_FILE_SIZE:
+            raise ValidationError("Image too large (max 10 MB).")
 
-    image_file = ContentFile(response.content, name=filename)
+    # Validate with Pillow (use load instead of verify)
+    try:
+        img = Image.open(ContentFile(content))
+        img.load()
+        fmt = img.format.lower()
+    except Exception:
+        raise ValidationError("The file is not a valid image.")
 
-    image = Image(title=title or filename, file=image_file)
-    if user:
-        image.uploaded_by_user = user
-    image.save()
+    if fmt not in ALLOWED_FORMATS:
+        raise ValidationError(f"Unsupported format: {fmt.upper()}")
 
+    # Save to Wagtail Image model
+    ImageModel = get_image_model()
+    filename = f"{uuid.uuid4().hex}.{fmt or 'jpg'}"
+
+    image = ImageModel.objects.create(
+        title=os.path.basename(parsed.path) or "Imported image",
+        file=ContentFile(content, name=filename),
+        uploaded_by_user=user,
+    )
     return image
