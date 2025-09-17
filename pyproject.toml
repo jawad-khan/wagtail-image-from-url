@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "image_url_upload.test_settings"
+python_files = ["test_*.py", "*_test.py"]
+addopts = "--reuse-db --tb=short -q"
+
+[tool.coverage.run]
+source = ["image_url_upload"]
+branch = true
