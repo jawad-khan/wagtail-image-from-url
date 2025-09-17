@@ -1,7 +1,7 @@
 
 # Wagtail Image From URL
 
-Add images to your Wagtail site directly from a URL without downloading them manually.  
+Add images to your Wagtail site directly from a URL without downloading them manually.
 This plugin provides a simple interface in the Wagtail admin to paste an image URL and add it to your images library.
 
 ---
