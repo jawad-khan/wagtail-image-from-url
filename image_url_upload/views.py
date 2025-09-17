@@ -1,15 +1,14 @@
-import requests
-from django.views.generic.edit import FormView
-from django.shortcuts import redirect
 from django.contrib import messages
-from django.core.files.base import ContentFile
-
-from wagtail.images.models import Image
-from wagtail.admin.forms import WagtailAdminPageForm
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.views.generic.edit import FormView
+from wagtail import hooks
 from wagtail.admin import messages as wagtail_messages
+from wagtail.admin.widgets.button import HeaderButton
+from wagtail.images.views.images import IndexView as ImageIndexView
 
 from .forms import ImageURLForm
-from .utils import validate_image_url, get_image_from_url
+from .utils import get_image_from_url
 
 
 class AddImageViaURLView(FormView):
@@ -28,9 +27,28 @@ class AddImageViaURLView(FormView):
             image = get_image_from_url(url, user=self.request.user)
         except Exception as e:
             messages.error(self.request, f"Failed to fetch image: {e}")
-            return redirect("wagtailimages:index")
+            return redirect("images_w_url_index")
 
         # create Wagtail Image
         wagtail_messages.success(self.request, f"Image '{image.title}' added successfully!")
 
-        return redirect("wagtailimages:index")
+        return redirect("images_w_url_index")
+
+
+class CustomImageIndexView(ImageIndexView):
+    @property
+    def header_buttons(self):
+        print(hooks.get_hooks("register_admin_menu_item"))
+        # Start with the default buttons from IndexView
+        buttons = super().header_buttons
+
+        # Add a custom button
+        buttons.append(
+            HeaderButton(
+                label="Add an Image from URL",
+                url=reverse("add_image_via_url"),
+                icon_name="plus",
+            )
+        )
+
+        return buttons

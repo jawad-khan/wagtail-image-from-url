@@ -1,13 +1,14 @@
-import os
-import uuid
 import ipaddress
+import os
 import socket
-import requests
+import uuid
 from urllib.parse import urlparse
+
+import requests
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from wagtail.images import get_image_model
 from PIL import Image
+from wagtail.images import get_image_model
 
 ALLOWED_FORMATS = {"avif", "gif", "jpeg", "jpg", "png", "webp"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
@@ -15,7 +16,9 @@ TIMEOUT = (5, 15)  # connect, read
 
 
 def _is_private_address(hostname: str) -> bool:
-    """Prevent SSRF by blocking private/loopback/reserved IPs."""
+    """
+    Prevent SSRF by blocking private/loopback/reserved IPs.
+    """
     try:
         ip = ipaddress.ip_address(hostname)
     except ValueError:
@@ -28,7 +31,9 @@ def _is_private_address(hostname: str) -> bool:
 
 
 def validate_image_url(url: str):
-    """Lightweight pre-check before downloading the whole file."""
+    """
+    Lightweight pre-check before downloading the whole file.
+    """
     parsed = urlparse(url)
 
     if parsed.scheme not in ("http", "https"):
@@ -36,7 +41,7 @@ def validate_image_url(url: str):
 
     if not parsed.hostname or _is_private_address(parsed.hostname):
         raise ValidationError("Blocked for security reasons (private/loopback address).")
-    
+
     try:
         head = requests.head(url, allow_redirects=True, timeout=TIMEOUT)
         content_type = head.headers.get("Content-Type", "")

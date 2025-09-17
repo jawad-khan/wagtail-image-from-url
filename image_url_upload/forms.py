@@ -1,7 +1,5 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .utils import validate_image_url
-import requests
 
 
 class ImageURLForm(forms.Form):
@@ -10,10 +8,9 @@ class ImageURLForm(forms.Form):
     image_url = forms.URLField(
         label="Image URL",
         required=True,
-        widget=forms.URLInput(attrs={
-            "placeholder": "https://example.com/image.jpg",
-            "class": "w-full border rounded p-2"
-        }),
+        widget=forms.URLInput(
+            attrs={"placeholder": "https://example.com/image.jpg", "class": "w-full border rounded p-2"}
+        ),
         help_text="Enter a direct link to an image (AVIF, JPG, JPEG, PNG, GIF, WEBP).",
     )
 
@@ -22,5 +19,5 @@ class ImageURLForm(forms.Form):
         # ✅ Only basic URL + scheme validation here
         if not image_url.lower().startswith(("http://", "https://")):
             raise ValidationError("Only http/https URLs are allowed.")
-        
+
         return image_url
