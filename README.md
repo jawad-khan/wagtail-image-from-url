@@ -35,5 +35,12 @@ INSTALLED_APPS = [
 ]
 ```
 
+---
+## Usage Click on Add an Image from URL link.
+
+<img width="693" height="75" alt="Screenshot 2025-09-17 at 3 51 22 PM" src="https://github.com/user-attachments/assets/f7b76caa-c349-4b9e-8205-1c6cedff71a9" />
+
+## Pass valid image url
+
 <img width="1249" height="462" alt="Screenshot 2025-09-17 at 3 43 44 PM" src="https://github.com/user-attachments/assets/639dd436-bde7-4bf4-bac0-dd710a63e728" />
 
