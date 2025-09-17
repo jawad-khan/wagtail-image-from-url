@@ -1,12 +1,11 @@
 import os
 
-
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-SECRET_KEY = 'test'
+SECRET_KEY = "test"
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -47,7 +46,7 @@ DATABASES = {
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
-ROOT_URLCONF = 'image_url_upload.test_urls'
-STATIC_URL = '/static/'
+ROOT_URLCONF = "image_url_upload.test_urls"
+STATIC_URL = "/static/"
 USE_TZ = True
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

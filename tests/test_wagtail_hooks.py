@@ -1,5 +1,5 @@
+import pytest  # noqa F401
 from wagtail import hooks
-import pytest
 
 
 def test_register_admin_urls():
@@ -7,7 +7,7 @@ def test_register_admin_urls():
     for fn in hooks.get_hooks("register_admin_urls"):
         urls.extend(fn())
     # URLResolver objects: use .pattern.name
-    names = [getattr(u, 'name', None) or getattr(getattr(u, 'pattern', None), 'name', None) for u in urls]
+    names = [getattr(u, "name", None) or getattr(getattr(u, "pattern", None), "name", None) for u in urls]
     assert "add_image_via_url" in names
     assert "images_w_url_index" in names
 

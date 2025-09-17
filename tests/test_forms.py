@@ -1,4 +1,5 @@
-import pytest
+import pytest  # noqa F401
+
 from image_url_upload.forms import ImageURLForm
 
 

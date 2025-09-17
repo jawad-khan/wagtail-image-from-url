@@ -1,7 +1,9 @@
 import pytest
-from django.urls import reverse
 from django.test import RequestFactory
+from django.urls import reverse
+
 from image_url_upload.views import AddImageViaURLView
+
 
 @pytest.mark.django_db
 def test_add_image_via_url_view_get():
