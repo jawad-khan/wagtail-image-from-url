@@ -1,4 +1,5 @@
 {% extends "wagtailadmin/base.html" %}
+{% load static wagtailadmin_tags %}
 {% load i18n wagtailadmin_tags %}
 {% block titletag %}
     {% trans "Add image from URL" %}
@@ -36,4 +37,20 @@
             </div>
         </form>
     </div>
+        <p>{{ form_media.css }}</p>
+        <div class="w-mt-8 w-p-4 w-bg-grey-50">
+        <h2 class="w-mb-2">{% trans "Or add from URLs" %}</h2>
+        <p>{% trans "Paste one image URL per line." %}</p>
+        <textarea id="url-input-area" class="w-w-full" rows="5"></textarea>
+        <button
+            id="fetch-urls-button"
+            class="button w-mt-2"
+            data-url="{% url 'add_from_url' %}"
+        >
+            {% trans "Fetch images" %}
+        </button>
+    </div>
+
+    <script type="module"
+            src="{% static 'image_url_upload/js/main.js' %}"></script>
 {% endblock %}

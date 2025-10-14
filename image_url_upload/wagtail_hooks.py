@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 
-from .views import AddImageViaURLView, CustomImageIndexView
+from .views import AddImageViaURLView, CustomImageIndexView, AddFromURLView
 
 
 @hooks.register("register_admin_urls")
@@ -13,6 +13,9 @@ def register_admin_urls():
             "images/add-url/",
             AddImageViaURLView.as_view(),
             name="add_image_via_url",
+        ),
+        path(
+            "images/add_from_url/", AddFromURLView.as_view(), name="add_from_url"
         ),
     ]
 

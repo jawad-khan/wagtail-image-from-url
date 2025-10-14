@@ -6,7 +6,12 @@ from wagtail import hooks
 from wagtail.admin import messages as wagtail_messages
 from wagtail.admin.widgets.button import HeaderButton
 from wagtail.images.views.images import IndexView as ImageIndexView
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import JsonResponse
+from wagtail.images.views.multiple import AddView
+import os
 
+import requests
 from .forms import ImageURLForm
 from .utils import get_image_from_url
 
@@ -52,3 +57,61 @@ class CustomImageIndexView(ImageIndexView):
         )
 
         return buttons
+
+
+class AddFromURLView(AddView):
+    # We inherit template_name, permission_policy, etc. from AddView
+
+    def post(self, request):
+        image_url = request.POST.get("url")
+        if not image_url:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error_message": "Please provide a URL.",
+                }
+            )
+
+        try:
+            # 1. Download the image data
+            response = requests.get(image_url, timeout=10)
+            response.raise_for_status()
+
+            # 2. Wrap the downloaded content in a Django-friendly file object
+            # This is the key step to making it compatible with the existing form.
+            file = SimpleUploadedFile(
+                name=os.path.basename(image_url.split("?")[0]),
+                content=response.content,
+                content_type=response.headers.get("Content-Type"),
+            )
+
+            # 3. Use the inherited form to validate the file
+            upload_form_class = self.get_upload_form_class()
+            form = upload_form_class(
+                {"title": file.name, "collection": request.POST.get("collection", 1)},
+                {"file": file},
+                user=request.user,
+            )
+
+            if form.is_valid():
+                # 4. Save the object using the inherited save method
+                self.object = self.save_object(form)
+
+                # 5. Return the JSON response using the inherited method.
+                # This method already handles duplicate checking!
+                return JsonResponse(self.get_edit_object_response_data())
+            else:
+                # Reuse the generic invalid response logic
+                print("\n\n\n\n\n\n\n")
+                print(form.errors)
+                print("\n\n\n\n\n\n\n")
+                return JsonResponse(self.get_invalid_response_data(form))
+
+        except requests.exceptions.RequestException as e:
+            # Handle download errors
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error_message": f"Download failed: {str(e)}",
+                }
+            )
