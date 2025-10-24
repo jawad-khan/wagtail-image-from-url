@@ -1,23 +1,49 @@
+"""
+Forms for image URL upload functionality.
+"""
+
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class ImageURLForm(forms.Form):
-    MAX_FILE_SIZE_MB = 10  # 10 MB
+    """
+    Form for validating and processing image URLs.
+
+    This form performs basic validation on image URLs before
+    they are processed by the backend.
+    """
 
     image_url = forms.URLField(
-        label="Image URL",
+        label=_("Image URL"),
         required=True,
         widget=forms.URLInput(
-            attrs={"placeholder": "https://example.com/image.jpg", "class": "w-full border rounded p-2"}
+            attrs={
+                "placeholder": "https://example.com/image.jpg",
+                "class": "w-field__input",
+            }
         ),
-        help_text="Enter a direct link to an image (AVIF, JPG, JPEG, PNG, GIF, WEBP).",
+        help_text=_(
+            "Enter a direct link to an image (AVIF, JPG, JPEG, PNG, GIF, WEBP)."
+        ),
     )
 
     def clean_image_url(self):
+        """
+        Validate that the URL uses HTTP or HTTPS protocol.
+
+        Returns:
+            str: The cleaned URL
+
+        Raises:
+            ValidationError: If the URL scheme is not http or https
+        """
         image_url = self.cleaned_data["image_url"]
-        # ✅ Only basic URL + scheme validation here
+
         if not image_url.lower().startswith(("http://", "https://")):
-            raise ValidationError("Only http/https URLs are allowed.")
+            raise ValidationError(
+                _("Only http/https URLs are allowed."), code="invalid_scheme"
+            )
 
         return image_url
