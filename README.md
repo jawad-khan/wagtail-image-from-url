@@ -1,46 +1,176 @@
+# 🖼️ Wagtail Image From URL
 
-# Wagtail Image From URL
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![Django Version](https://img.shields.io/badge/django-4.2%2B-green.svg)](https://www.djangoproject.com/)
+[![Wagtail Version](https://img.shields.io/badge/wagtail-5.0%2B-teal.svg)](https://wagtail.org/)
 
-Add images to your Wagtail site directly from a URL without downloading them manually.
-This plugin provides a simple interface in the Wagtail admin to paste an image URL and add it to your images library.
-
----
-
-## Features
-
-- Add images to Wagtail via URL
-- Handles common image formats (JPEG, PNG, GIF)
-- Shows success/error messages in the Wagtail admin
-- Includes breadcrumbs for easy navigation
+A powerful and user-friendly Wagtail plugin that enables you to import images directly from URLs into your Wagtail image library without the need to manually download them first. Perfect for content editors who need to quickly add images from external sources.
 
 ---
 
-## Installation
+## ✨ Features
+
+### 🚀 Core Functionality
+- **Bulk URL Import**: Add multiple images simultaneously by providing multiple URLs
+- **Direct Integration**: Seamlessly integrates into the Wagtail admin interface
+- **Real-time Feedback**: Inline status indicators show success/failure for each URL
+- **Beautiful UI**: Modern, responsive design with smooth animations and transitions
+- **Smart Validation**: Client-side and server-side URL validation
+
+
+### 🎨 User Experience
+- **Intuitive Interface**: Clean, modern UI that follows Wagtail design patterns
+- **Batch Processing**: Submit multiple URLs with a single click
+- **Dynamic Field Management**: Add or remove URL fields on the fly
+- **Visual Feedback**: Success/error messages with icons
+- **Responsive Design**: Works perfectly on desktop and mobile devices
+- **No Page Reload**: AJAX-based submission for smooth user experience
+
+---
+
+## 📋 Requirements
+
+- **Python**: 3.10 or higher
+- **Django**: 4.2 or higher
+- **Wagtail**: 5.0 or higher
+- **Additional Dependencies**:
+  - `requests` - For HTTP operations
+  - `Pillow` - For image validation and processing
+
+---
+
+## 📦 Installation
+
+### Step 1: Install the Package
 
 Install directly from GitHub using pip:
 
-```
-bash
+```bash
 pip install git+https://github.com/awais786/wagtail-image-from-url.git@main
 ```
 
----
-## Add to Installed Apps (Required!)
+### Step 2: Add to Installed Apps
 
-```
-bash
+Add `image_url_upload` to your Django `INSTALLED_APPS` in `settings.py`:
+
+```python
 INSTALLED_APPS = [
-    ...
-    "image_url_upload",  # <-- Add this line
+    # ... other apps
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail',
+    
+    'image_url_upload',  # ← Add this line
+    
+    # ... other apps
 ]
 ```
 
+### Step 3: Run Migrations (if needed)
+
+```bash
+python manage.py migrate
+```
+
+### Step 4: Collect Static Files
+
+```bash
+python manage.py collectstatic --noinput
+```
 ---
-## Usage Click on Add an Image from URL link.
 
-<img width="693" height="75" alt="Screenshot 2025-09-17 at 3 51 22 PM" src="https://github.com/user-attachments/assets/f7b76caa-c349-4b9e-8205-1c6cedff71a9" />
+## 🎯 Usage
 
-## Pass valid image url
+### Quick Start
 
-<img width="1249" height="462" alt="Screenshot 2025-09-17 at 3 43 44 PM" src="https://github.com/user-attachments/assets/639dd436-bde7-4bf4-bac0-dd710a63e728" />
+1. **Navigate to Images**: Go to the Wagtail admin and click on "Images" in the sidebar
 
+2. **Click "Add an Image from URL"**: You'll see a new button in the images index page header
+
+   ![Add Image Button](docs/images/add-url.png)
+
+3. **Enter Image URLs**: 
+   - Enter one or more image URLs
+   - Click "Add Another URL" to add more fields
+   - Remove unwanted fields using the trash icon
+
+4. **Fetch Images**: Click the "Fetch All Images" button to import all images at once
+
+   ![Add Images Form](docs/images/add-form.png)
+
+5. **View Results**: See real-time status updates next to each URL field
+
+
+## 🧪 Testing
+
+The project includes comprehensive tests. To run them:
+
+```bash
+# Install development dependencies
+pip install pytest pytest-django coverage
+
+# Run tests
+pytest
+
+# Run with coverage
+pytest --cov=image_url_upload --cov-report=html
+```
+
+---
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/awais786/wagtail-image-from-url.git
+cd wagtail-image-from-url
+
+# Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+```
+
+### Code Style
+
+- Follow PEP 8 guidelines
+- Use Black for code formatting (line length: 120)
+- Write docstrings for public functions
+- Add tests for new features
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/awais786/wagtail-image-from-url/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/awais786/wagtail-image-from-url/discussions)
+- **Wagtail Slack**: Find us in the [#packages channel](https://wagtail.org/slack/)
+
+
+## 📊 Changelog
+
+### Version 0.1.0 (Current)
+- ✨ Initial release
+- ✅ Bulk URL import functionality
+- ✅ Real-time status feedback
+- ✅ Support for multiple image formats
+
+
+<div align="center">
+
+
+[⭐ Star on GitHub](https://github.com/awais786/wagtail-image-from-url) | [🐛 Report Bug](https://github.com/awais786/wagtail-image-from-url/issues) | [💡 Request Feature](https://github.com/awais786/wagtail-image-from-url/issues)
+
+</div>
