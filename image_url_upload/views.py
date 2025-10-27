@@ -6,60 +6,16 @@ import logging
 import os
 
 import requests
-from django.contrib import messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import JsonResponse
-from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views.generic.edit import FormView
-from wagtail.admin import messages as wagtail_messages
 from wagtail.admin.widgets.button import HeaderButton
 from wagtail.images.views.images import IndexView as ImageIndexView
 from wagtail.images.views.multiple import AddView
 
-from .forms import ImageURLForm
-from .utils import get_image_from_url
-
 logger = logging.getLogger(__name__)
 
-
-class AddImageViaURLView(FormView):
-    """
-    View for adding a single image via URL (legacy support).
-
-    This view provides a simple form for adding one image at a time.
-    It's kept for backward compatibility but the bulk upload view
-    is now preferred.
-    """
-
-    template_name = "image_url_upload/add_via_url.html"
-    form_class = ImageURLForm
-
-    def get_context_data(self, **kwargs):
-        """Add breadcrumbs and header to context."""
-        context = super().get_context_data(**kwargs)
-        context["breadcrumbs_items"] = [
-            {"url": reverse("images_w_url_index"), "label": _("Images")},
-            {"url": "", "label": _("Add from URL")},
-        ]
-        context["header_title"] = _("Add image from URL")
-        return context
-
-    def form_valid(self, form):
-        """Process the form and create the image."""
-        url = form.cleaned_data["image_url"]
-
-        try:
-            image = get_image_from_url(url, user=self.request.user)
-            wagtail_messages.success(
-                self.request, _("Image '{title}' added successfully!").format(title=image.title)
-            )
-        except Exception as e:
-            logger.error(f"Failed to fetch image from {url}: {e}")
-            messages.error(self.request, _("Failed to fetch image: {error}").format(error=str(e)))
-
-        return redirect("images_w_url_index")
 
 
 class CustomImageIndexView(ImageIndexView):
@@ -78,7 +34,7 @@ class CustomImageIndexView(ImageIndexView):
         buttons.append(
             HeaderButton(
                 label=_("Add an Image from URL"),
-                url=reverse("add_image_via_url"),
+                url=reverse("add_from_url"),
                 icon_name="plus",
             )
         )
@@ -94,6 +50,19 @@ class AddFromURLView(AddView):
     Wagtail Image objects. It extends Wagtail's AddView to leverage
     built-in duplicate detection and form validation.
     """
+
+    template_name = "image_url_upload/add_via_url.html"
+
+    def get_context_data(self, **kwargs):
+        """Add breadcrumbs and header to context."""
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs_items"] = [
+            {"url": reverse("images_w_url_index"), "label": _("Images")},
+            {"url": "", "label": _("Add from URL")},
+        ]
+        context["header_title"] = _("Add image from URL")
+        return context
+
 
     def post(self, request):
         """
