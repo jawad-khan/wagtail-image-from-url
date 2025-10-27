@@ -226,7 +226,8 @@
       $button.find('.button-text').addClass('w-hidden');
       $button.find('.button-loading').removeClass('w-hidden');
 
-      // Upload all URLs
+      // Upload all URLs and track results
+      const uploadResults = [];
       const requests = urlFields.map(({$fieldGroup, url}) => {
         // Show uploading status
         updateInlineStatus($fieldGroup, 'uploading', 'Uploading...');
@@ -250,8 +251,10 @@
             if (response.success) {
               if (response.duplicate) {
                 updateInlineStatus($fieldGroup, 'duplicate', '⚠️ Already exists');
+                uploadResults.push({ success: true, duplicate: true });
               } else {
                 updateInlineStatus($fieldGroup, 'success', '✓ Uploaded successfully');
+                uploadResults.push({ success: true, duplicate: false });
               }
             } else {
               updateInlineStatus(
@@ -259,21 +262,35 @@
                 'error',
                 '✗ ' + (response.error_message || 'Upload failed')
               );
+              uploadResults.push({ success: false });
             }
           },
           error: (xhr) => {
             const errorMsg = xhr.responseJSON?.error_message || xhr.statusText;
             updateInlineStatus($fieldGroup, 'error', `✗ Error: ${errorMsg}`);
+            uploadResults.push({ success: false });
           }
         });
       });
 
-      // When all requests complete, re-enable button
+      // When all requests complete, re-enable button and check for redirect
       $.when.apply($, requests).always(() => {
         isUploading = false;
         $button.prop('disabled', false);
         $button.find('.button-text').removeClass('w-hidden');
         $button.find('.button-loading').addClass('w-hidden');
+
+        // Check if all uploads were successful (including duplicates)
+        const allSuccessful = uploadResults.every(result => result.success);
+        const hasNewImages = uploadResults.some(result => result.success && !result.duplicate);
+
+        // Redirect to gallery if all were successful and at least one new image was added
+        if (allSuccessful && hasNewImages) {
+          // Show a brief success message before redirecting
+          setTimeout(() => {
+            window.location.href = '/admin/images-w-url/';
+          }, 1000);
+        }
       });
     });
   }

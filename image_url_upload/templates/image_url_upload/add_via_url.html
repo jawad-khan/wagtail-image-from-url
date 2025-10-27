@@ -56,9 +56,9 @@
                     <button
                         id="add-url-field-btn"
                         type="button"
-                        class="w-inline-flex w-items-center w-px-6 w-py-3 w-bg-primary-600 hover:w-bg-primary-700 w-text-white w-font-semibold w-rounded-md w-shadow-md hover:w-shadow-lg w-transition-all"
+                        class="button button-secondary w-inline-flex w-items-center"
                     >
-                        <svg class="w-w-5 w-h-5 w-mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="icon icon-plus w-w-4 w-h-4 w-mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
                         {% trans "Add Another URL" %}
@@ -70,10 +70,10 @@
                     <button
                         id="fetch-urls-button"
                         type="button"
-                        class="w-inline-flex w-items-center w-px-6 w-py-3 w-bg-primary-600 hover:w-bg-primary-700 w-text-white w-font-semibold w-rounded-md w-shadow-md hover:w-shadow-lg w-transition-all disabled:w-opacity-50 disabled:w-cursor-not-allowed"
+                        class="button action-save w-inline-flex w-items-center disabled:w-opacity-50 disabled:w-cursor-not-allowed"
                         data-url="{% url 'add_from_url' %}"
                     >
-                        <svg class="w-w-5 w-h-5 w-mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="icon icon-download w-w-4 w-h-4 w-mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
                         <span class="button-text">{% trans "Fetch All Images" %}</span>
