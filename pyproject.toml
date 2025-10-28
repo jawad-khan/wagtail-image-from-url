@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
-    { name = "Awais Qureshi", email = "" }
+    { name = "Awais Qureshi", email = "awais.qureshi@arbisoft.com" }
 ]
 keywords = ["wagtail", "django", "cms", "image", "upload", "url", "import"]
 
