@@ -12,11 +12,12 @@ A powerful and user-friendly Wagtail plugin that enables you to import images di
 ## ✨ Features
 
 ### 🚀 Core Functionality
-- **Bulk URL Import**: Add multiple images simultaneously by providing multiple URLs
+- **Bulk URL Import**: Add multiple images simultaneously by providing multiple URLs in a single form submission.
 - **Direct Integration**: Seamlessly integrates into the Wagtail admin interface
 - **Real-time Feedback**: Inline status indicators show success/failure for each URL
 - **Beautiful UI**: Modern, responsive design with smooth animations and transitions
 - **Smart Validation**: Client-side and server-side URL validation
+- **File size limit**: Each imported image is limited to a maximum size of 10 MB (to avoid excessively large downloads and memory usage).
 
 
 ### 🎨 User Experience
@@ -37,6 +38,7 @@ A powerful and user-friendly Wagtail plugin that enables you to import images di
 - **Additional Dependencies**:
   - `requests` - For HTTP operations
   - `Pillow` - For image validation and processing
+- **Max image size**: 10 MB per image (the plugin validates file sizes and will reject images larger than this limit)
 
 ---
 
@@ -92,7 +94,8 @@ python manage.py collectstatic --noinput
    ![Add Image Button](docs/images/add-url.png)
 
 3. **Enter Image URLs**: 
-   - Enter one or more image URLs
+   - Enter one or more image URLs (you can add multiple URLs in the same form to perform a bulk import).
+   - Each image must be 10 MB or smaller — larger files will be rejected by the plugin.
    - Click "Add Another URL" to add more fields
    - Remove unwanted fields using the trash icon
 
