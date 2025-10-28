@@ -26,8 +26,6 @@ setup(
     install_requires=[
         "Django>=4.2",
         "Wagtail>=5.0",
-        "requests>=2.25.0",
-        "Pillow>=9.0.0",
     ],
     extras_require={
         "dev": [
