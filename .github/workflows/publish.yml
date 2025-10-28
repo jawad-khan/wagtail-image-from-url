@@ -21,10 +21,24 @@ jobs:
           python-version: '3.x'
 
       - name: Install build dependencies
-        run: pip install build
+        run: python -m pip install --upgrade pip build setuptools wheel
 
       - name: Build package
         run: python -m build
 
+      - name: Show dist contents and wheel METADATA (for debugging)
+        run: |
+          echo "Contents of dist/"
+          ls -la dist || true
+          echo "\nMETADATA for built wheel(s):"
+          for whl in dist/*.whl; do
+            echo "--- $whl ---"
+            unzip -p "$whl" '*/METADATA' || true
+            echo "\n"
+          done
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.12.2
+        with:
+          # Ensure the action picks packages from 'dist/'
+          packages_dir: dist
