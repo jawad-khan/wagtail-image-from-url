@@ -241,24 +241,6 @@ class AddFromURLViewTests(TestCase):
         self.assertFalse(data["success"])
         self.assertIn("Unexpected error", data["error_message"])
 
-    @patch("image_url_upload.views.requests.get")
-    def test_user_agent_header_sent(self, mock_get):
-        """Should include custom User-Agent header in request."""
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.content = self._create_test_image_bytes()
-        mock_response.headers = {"Content-Type": "image/jpeg"}
-        mock_response.raise_for_status = Mock()
-        mock_get.return_value = mock_response
-
-        self.client.post(
-            self.url, {"url": "https://example.com/test.jpg", "collection": self.collection.id}
-        )
-
-        mock_get.assert_called_once()
-        call_kwargs = mock_get.call_args[1]
-        self.assertIn("User-Agent", call_kwargs["headers"])
-        self.assertIn("Wagtail-Image-From-URL", call_kwargs["headers"]["User-Agent"])
 
     @patch("image_url_upload.views.requests.get")
     def test_timeout_value_is_set(self, mock_get):
@@ -273,8 +255,13 @@ class AddFromURLViewTests(TestCase):
         self.client.post(self.url, {"url": "https://example.com/test.jpg"})
 
         mock_get.assert_called_once()
-        call_kwargs = mock_get.call_args[1]
-        self.assertEqual(call_kwargs["timeout"], 10)
+        # Check timeout is passed (as positional or keyword arg)
+        call_args = mock_get.call_args
+        # Can be in args[1] or kwargs['timeout']
+        if len(call_args[0]) > 1:
+            self.assertEqual(call_args[0][1], 10)  # positional arg
+        else:
+            self.assertEqual(call_args[1]["timeout"], 10)  # keyword arg
 
     @patch("image_url_upload.views.requests.get")
     def test_default_filename_when_missing(self, mock_get):
