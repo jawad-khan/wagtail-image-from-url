@@ -96,7 +96,7 @@ class AddFromURLView(AddView):
             # Download the image data
             logger.info(f"Downloading image from: {image_url}")
             response = requests.get(
-                image_url, timeout=10, headers={"User-Agent": "Wagtail-Image-From-URL/0.1.0"}
+                image_url, timeout=10, headers={"User-Agent": "Wagtail-Image-From-URL/1.0.0"}
             )
             response.raise_for_status()
 
