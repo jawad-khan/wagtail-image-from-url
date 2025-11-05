@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wagtail-image-from-url"
-version = "1.0.1"
+version = "1.0.0"
 description = "Add images to Wagtail via URL - A production-ready plugin for importing images from external URLs"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
