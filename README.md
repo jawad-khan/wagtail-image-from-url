@@ -99,7 +99,8 @@ That's it! The package is ready to use. Static files will be automatically disco
 
 4. **Fetch Images**: Click the "Fetch All Images" button to import all images at once
 
-   ![Add Images Form](docs/images/add-form.png)
+  <img width="1070" height="579" alt="Screenshot 2025-11-05 at 3 42 01 PM" src="https://github.com/user-attachments/assets/b937dc55-34d0-4bae-b3cc-a7288aad9e77" />
+
 
 5. **View Results**: See real-time status updates next to each URL field
 
