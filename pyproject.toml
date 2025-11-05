@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0,<70.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "wagtail-image-from-url"
 version = "1.0.0"
 description = "Add images to Wagtail via URL - A production-ready plugin for importing images from external URLs"
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
@@ -17,6 +17,8 @@ keywords = ["wagtail", "django", "cms", "image", "upload", "url", "import"]
 dependencies = [
     "Django>=4.2",
     "Wagtail>=5.0",
+    "requests>=2.25.0",
+    "Pillow>=9.0.0",
 ]
 
 classifiers = [
@@ -29,7 +31,6 @@ classifiers = [
     "Framework :: Wagtail :: 5",
     "Framework :: Wagtail :: 6",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
