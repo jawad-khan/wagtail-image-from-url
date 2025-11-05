@@ -5,7 +5,7 @@ This package provides functionality to add images to Wagtail's image library
 directly from URLs without manual download.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Awais Qureshi"
 __license__ = "MIT"
 __all__ = ["ImageUrlUploadConfig"]

@@ -1,4 +1,4 @@
-.PHONY: help clean install test build check publish-test publish
+.PHONY: help clean install build check publish-test publish dev-setup
 
 help:  ## Show this help message
 	@echo 'Usage: make [target]'
@@ -16,17 +16,11 @@ clean:  ## Remove build artifacts and cache files
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete
 
-install:  ## Install package in development mode with dev dependencies
-	pip install -e ".[dev]"
+install:  ## Install package in editable mode
+	pip install -e .
 
 install-build-tools:  ## Install tools needed for building and publishing
 	pip install --upgrade pip build "setuptools>=61.0,<70.0" wheel twine
-
-test:  ## Run tests with pytest
-	pytest
-
-test-coverage:  ## Run tests with coverage report
-	pytest --cov=image_url_upload --cov-report=html --cov-report=term
 
 build: clean install-build-tools  ## Build distribution packages
 	python -m build
@@ -51,15 +45,7 @@ publish: check  ## Publish to PyPI (use with caution!)
 		echo "Cancelled."; \
 	fi
 
-format:  ## Format code with black and isort
-	black --line-length 120 image_url_upload/ tests/
-	isort --profile black image_url_upload/ tests/
-
-lint:  ## Run linters (flake8)
-	flake8 image_url_upload/ tests/
-
-quality: format lint  ## Run all code quality tools
-
 dev-setup: install-build-tools install  ## Complete development environment setup
 	@echo "Development environment setup complete!"
+	@echo "Note: Install testing/linting tools separately if needed (pytest, black, flake8, etc.)"
 

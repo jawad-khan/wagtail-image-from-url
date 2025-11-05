@@ -14,6 +14,7 @@ from wagtail.admin.widgets.button import HeaderButton
 from wagtail.images.views.images import IndexView as ImageIndexView
 from wagtail.images.views.multiple import AddView
 
+
 ALLOWED_CONTENT_TYPES = {
     "image/jpeg",
     "image/jpg",
@@ -95,9 +96,7 @@ class AddFromURLView(AddView):
         try:
             # Download the image data
             logger.info(f"Downloading image from: {image_url}")
-            response = requests.get(
-                image_url, timeout=10, headers={"User-Agent": "Wagtail-Image-From-URL/1.0.0"}
-            )
+            response = requests.get(image_url, timeout=10)
             response.raise_for_status()
 
             # Validate content type
@@ -133,8 +132,25 @@ class AddFromURLView(AddView):
                     }
                 )
 
-            # Extract filename from URL
-            filename = os.path.basename(image_url.split("?")[0]) or "image.jpg"
+            # Extract filename from URL, removing query params and fragments
+            url_path = image_url.split("?")[0].split("#")[0]
+            filename = os.path.basename(url_path)
+
+            # If no filename or no extension, generate one based on content type
+            if not filename or "." not in filename:
+                extension_map = {
+                    "image/jpeg": ".jpg",
+                    "image/jpg": ".jpg",
+                    "image/png": ".png",
+                    "image/gif": ".gif",
+                    "image/bmp": ".bmp",
+                    "image/webp": ".webp",
+                }
+                extension = extension_map.get(content_type, ".jpg")
+                filename = f"image{extension}"
+
+            # Sanitize filename and limit length
+            filename = filename[:255]  # Max filename length on most filesystems
 
             # Wrap in Django file object
             file = SimpleUploadedFile(

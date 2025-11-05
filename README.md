@@ -1,9 +1,11 @@
 # 🖼️ Wagtail Image From URL
 
+[![PyPI version](https://badge.fury.io/py/wagtail-image-from-url.svg)](https://pypi.org/project/wagtail-image-from-url/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![Django Version](https://img.shields.io/badge/django-4.2%2B-green.svg)](https://www.djangoproject.com/)
 [![Wagtail Version](https://img.shields.io/badge/wagtail-5.0%2B-teal.svg)](https://wagtail.org/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/wagtail-image-from-url)](https://pypi.org/project/wagtail-image-from-url/)
 
 A powerful and user-friendly Wagtail plugin that enables you to import images directly from URLs into your Wagtail image library without the need to manually download them first. Perfect for content editors who need to quickly add images from external sources.
 
@@ -46,7 +48,13 @@ A powerful and user-friendly Wagtail plugin that enables you to import images di
 
 ### Step 1: Install the Package
 
-Install directly from GitHub using pip:
+Install from PyPI:
+
+```bash
+pip install wagtail-image-from-url
+```
+
+Alternatively, install from GitHub:
 
 ```bash
 pip install git+https://github.com/awais786/wagtail-image-from-url.git@main
@@ -70,17 +78,7 @@ INSTALLED_APPS = [
 ]
 ```
 
-### Step 3: Run Migrations (if needed)
-
-```bash
-python manage.py migrate
-```
-
-### Step 4: Collect Static Files
-
-```bash
-python manage.py collectstatic --noinput
-```
+That's it! The package is ready to use. Static files will be automatically discovered by Django's staticfiles system.
 ---
 
 ## 🎯 Usage
@@ -111,19 +109,16 @@ python manage.py collectstatic --noinput
 The project includes comprehensive tests. To run them:
 
 ```bash
-# Install development dependencies
-pip install pytest pytest-django coverage
+# Install test dependencies separately
+pip install pytest pytest-django
 
 # Run tests
 pytest
-
-# Run with coverage
-pytest --cov=image_url_upload --cov-report=html
 ```
 
 ---
 
-### Development Setup
+## 🛠️ Development Setup
 
 ```bash
 # Clone the repository
@@ -134,19 +129,16 @@ cd wagtail-image-from-url
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install development dependencies
-pip install -e ".[dev]"
+# Install package in editable mode
+pip install -e .
+
+# Install test/development tools (optional)
+pip install pytest pytest-django black flake8
 
 # Run tests
 pytest
 ```
 
-### Code Style
-
-- Follow PEP 8 guidelines
-- Use Black for code formatting (line length: 120)
-- Write docstrings for public functions
-- Add tests for new features
 
 ---
 
@@ -164,16 +156,33 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📊 Changelog
 
-### Version 0.1.0 (Current)
-- ✨ Initial release
+### Version 1.0.1 (Current)
+- ✨ Production-ready release
 - ✅ Bulk URL import functionality
 - ✅ Real-time status feedback
-- ✅ Support for multiple image formats
+- ✅ Support for JPEG, PNG, GIF, BMP, and WEBP formats
+- ✅ 10 MB file size limit
+- ✅ Smart filename extraction with fallbacks
+- ✅ Content-type validation
+- ✅ Timeout protection (10 seconds)
+- ✅ Comprehensive error handling
 
+For detailed changelog, see [CHANGELOG.md](CHANGELOG.md)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+---
 
 <div align="center">
 
-
 [⭐ Star on GitHub](https://github.com/awais786/wagtail-image-from-url) | [🐛 Report Bug](https://github.com/awais786/wagtail-image-from-url/issues) | [💡 Request Feature](https://github.com/awais786/wagtail-image-from-url/issues)
 
+**Made with ❤️ for the Wagtail community**
+
 </div>
+
+
