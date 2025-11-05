@@ -46,7 +46,7 @@ DATABASES = {
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
-ROOT_URLCONF = "image_url_upload.test_urls"
+ROOT_URLCONF = "tests.urls"
 STATIC_URL = "/static/"
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
