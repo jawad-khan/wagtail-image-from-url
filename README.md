@@ -12,6 +12,8 @@ A Wagtail plugin that allows you to import images directly from URLs into your i
 - Support for JPEG, PNG, GIF, BMP, and WEBP formats
 - AJAX-based submission without page reload
 - Dynamic URL field management
+- Configurable domain allow/block lists for security
+- SSRF (Server-Side Request Forgery) protection to prevent internal network access
 
 ## Requirements
 
@@ -51,6 +53,46 @@ INSTALLED_APPS = [
 ```
 
 Static files will be automatically discovered by Django's staticfiles system.
+
+## Configuration
+
+The plugin supports optional security settings in your Django `settings.py`:
+
+### Domain Allow/Block Lists
+
+Control which domains are allowed for image downloads:
+
+```python
+# Allow only specific domains (whitelist approach)
+WAGTAIL_IMAGE_URL_ALLOWED_DOMAINS = [
+    'example.com',
+    'cdn.example.com',
+    'images.unsplash.com',
+]
+
+# Or block specific domains (blacklist approach)
+WAGTAIL_IMAGE_URL_BLOCKED_DOMAINS = [
+    'malicious-site.com',
+    'spam.example.com',
+]
+```
+
+**Note:** If `WAGTAIL_IMAGE_URL_ALLOWED_DOMAINS` is set, only those domains are allowed (whitelist takes precedence). If only `WAGTAIL_IMAGE_URL_BLOCKED_DOMAINS` is set, all domains except those are allowed. If neither is set, all domains are allowed.
+
+### SSRF Protection
+
+Prevent Server-Side Request Forgery attacks by blocking requests to private IP addresses:
+
+```python
+# Prevent downloading from private/internal IP addresses (default: True)
+WAGTAIL_IMAGE_URL_PREVENT_SSRF = True
+```
+
+This blocks URLs pointing to:
+- Private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
+- Loopback addresses (127.0.0.1, localhost, ::1)
+- Link-local addresses
+- Reserved IP ranges
 
 ## Usage
 
